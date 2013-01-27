@@ -1,12 +1,12 @@
 <?php
-	require('config.php');
-	require('auth.php');
-	require('get-words.php');
-	require('register.php');
+	require_once('config.php');
+	require_once('auth.php');
+	require_once('get-words.php');
+	require_once('register.php');
 	// http://api.qduku.com/index?action=authenticate&username=nathan&password=123456
 	switch($_REQUEST['action']){
 		case 'authenticate':
-    		$results = doAuth($_REQUEST['username'], $_REQUEST['password']);
+    		$results = doAuth($_REQUEST['email'], $_REQUEST['password']);
     		break;
 		case 'getWordAndDefinition':
     		$results = getWordAndDefinition();
@@ -18,4 +18,4 @@
 			$results = register($_REQUEST['email'], $_REQUEST['password'],$_REQUEST['firstName'],$_REQUEST['lastName'],
 			$_REQUEST['age'], $_REQUEST['education'], $_REQUEST['sex']);
 	}	
-	die(json_encode($results));
+	die("Error: " . json_encode($results));
