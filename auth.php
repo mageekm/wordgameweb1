@@ -5,6 +5,8 @@
 	function doAuth($email, $password){
 		$passback = array('success' => false);
 		$qry="SELECT * FROM player WHERE email='$email' limit 1";
+
+		$qry = clean($qry);
 		$result = mysql_query($qry);
 		if($result) {
 			if(mysql_num_rows($result) > 0) {
