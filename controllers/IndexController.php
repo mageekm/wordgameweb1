@@ -57,6 +57,21 @@ class IndexController extends ApplicationController {
 		die(json_encode_all($passback));
 	}
 
+	function getPuzzleWord() {
+		$q = new Query();
+		if(!empty($_REQUEST['type'])) {
+			$q->add(Word::TYPE, $_REQUEST['type']);
+		}
+		if(!empty($_REQUEST['level'])) {
+			$q->add(Word::DIFFICULTY, $_REQUEST['level']);
+		}
+		$q->setLimit(4);
+		$q->orderBy('RAND()');
+		$words = Word::doSelect($q);
+
+		die(json_encode_all($words));
+	}
+
 	function register() {
 		print_r2($_REQUEST);
 		$passback = array('success' => false, 'error' => $this->_getErrorMessage(self::ERROR_MISSING_PARAMETER));
