@@ -6,6 +6,7 @@
 	//Create query
 	function doAuth($email, $password){
 		$qry="SELECT * FROM player WHERE email='$email'";
+		$qry = clean($qry);
 		$result = mysql_query($qry);
 		if($result) {
 			if(mysql_num_rows($result) > 0) {
