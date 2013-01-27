@@ -1,0 +1,2 @@
+<?
+redirect('http://qduku.com');
