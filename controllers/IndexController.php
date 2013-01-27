@@ -25,12 +25,16 @@ class IndexController extends ApplicationController {
 	}
 
 	function cleanWords() {
-		foreach(Word::doSelect() as $word) {
-			//$word = new Word();
-			$word->setWord(ucfirst(trim($word->getWord())));
-			$word->setDefinition(ucfirst(trim($word->getDefinition())));
-			$word->save();
+		if(false) {
+			set_time_limit(0);
+			foreach(Word::doSelect() as $word) {
+				//$word = new Word();
+				$word->setWord(ucfirst(trim($word->getWord())));
+				$word->setDefinition(ucfirst(trim($word->getDefinition())));
+				$word->save();
+			}
 		}
+		redirect('http://qduku.com');
 	}
 
 	function authenticate() {
@@ -73,7 +77,6 @@ class IndexController extends ApplicationController {
 	}
 
 	function register() {
-		print_r2($_REQUEST);
 		$passback = array('success' => false, 'error' => $this->_getErrorMessage(self::ERROR_MISSING_PARAMETER));
 		if(!empty($_REQUEST['email']) && !empty($_REQUEST['password'])) {
 			$email = $_REQUEST['email'];
@@ -88,6 +91,7 @@ class IndexController extends ApplicationController {
 						$player = new Player();
 						$player->fromArray($_REQUEST);
 						$player->setPassword($hash);
+						$player->setPaidTier(0);
 						if($player->save()) {
 							$passback = array('success' => true, 'sessionid' => session_id());
 						} else {
