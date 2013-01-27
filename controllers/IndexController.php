@@ -2,28 +2,54 @@
 
 class IndexController extends ApplicationController {
 
+	const ERROR_MISSING_PARAMETER = 1;
+	const ERROR_INVALID_LOGIN = 2;
+	const ERROR_EMAIL_IN_USE = 3;
+	const ERROR_ACCOUNT_CREATE_ERROR = 4;
+	const ERROR_EMAIL_INVALID = 5;
+
+	static $Error_messages = array(
+		self::ERROR_MISSING_PARAMETER => 'Missing parameter',
+		self::ERROR_INVALID_LOGIN => 'Invalid login. Please try again',
+		self::ERROR_EMAIL_IN_USE => 'That email is already in use. Please try again.',
+		self::ERROR_ACCOUNT_CREATE_ERROR => 'An error was encountered while creating your account. Please try again later.',
+		self::ERROR_EMAIL_INVALID => 'Email is invalid',
+	);
+
+	function _getErrorMessage($error) {
+		return array('number' => $error, 'message' => self::$Error_messages[$error]);
+	}
+
 	function index() {
 		redirect('http://qduku.com'); //don't access the api directly
 	}
 
+	function cleanWords() {
+		foreach(Word::doSelect() as $word) {
+			//$word = new Word();
+			$word->setWord(ucfirst(trim($word->getWord())));
+			$word->setDefinition(ucfirst(trim($word->getDefinition())));
+			$word->save();
+		}
+	}
+
 	function authenticate() {
-		$passback = array('success' => false, 'error' => array('number' => 1, 'message' => 'Missing parameter'));
+		$passback = array('success' => false, 'error' => $this->_getErrorMessage(self::ERROR_MISSING_PARAMETER));
 		if(!empty($_REQUEST['email']) && !empty($_REQUEST['password'])) {
-			$passback = array('success' => false);
-			$player = Player::retrieveByEmail($_REQUEST['email']);
-			if($player) {
-				$hash = $player->getPassword();
-				if(password_verify($password, $hash)) {
-					$passback['success'] = true;
-					$passback['sessionid'] = session_id();
-				} //don't worry, it failed
+			$password = $_REQUEST['password'];
+			$email = $_REQUEST['email'];
+			$player = Player::retrieveByEmail($email);
+			if($player && password_verify($password, $player->getPassword())) {
+				$passback = array('success' => true, 'sessionid' => session_id());
+			} else {
+				$passback = array('success' => false, 'error' => $this->_getErrorMessage(self::ERROR_INVALID_LOGIN));
 			}
 		}
 		die(json_encode($passback));
 	}
 
 	function getRandomWords() {
-		$passback = array('success' => false, 'error' => array('number' => 1, 'message' => 'Missing parameter'));
+		$passback = array('success' => false, 'error' => $this->_getErrorMessage(self::ERROR_MISSING_PARAMETER));
 		if(!empty($_REQUEST['n'])) {
 			$words = Word::doSelect(Query::create()->order('RAND()')->setLimit($_REQUEST['n']));
 			$passback = array('success' => true, 'words' => $words);
@@ -32,30 +58,35 @@ class IndexController extends ApplicationController {
 	}
 
 	function register() {
-		$passback = array('success' => false, 'error' => array('number' => 1, 'message' => 'Missing parameter'));
+		print_r2($_REQUEST);
+		$passback = array('success' => false, 'error' => $this->_getErrorMessage(self::ERROR_MISSING_PARAMETER));
 		if(!empty($_REQUEST['email']) && !empty($_REQUEST['password'])) {
 			$email = $_REQUEST['email'];
-			$password = $_REQUEST['password'];
-			$count = Player::doCount(Query::create()->add(Player::EMAIL, $email));
-			if($count > 0) {
-				$passback['success'] = false;
-				$passback['error'] = array('number' => 2, 'message' => 'That email is already in use. Please try again.');
-			} else {
-				$hash = password_hash($password, PASSWORD_DEFAULT, array("cost" => 10));
-				if(false !== $hash) { //hash success
-					$player = new Player();
-					$player->fromArray($_REQUEST);
-					if($player->save()) {
-						$return['success'] = true;
-						$return['sessionid'] = session_id();
-					} else {
-						$return['success'] = false;
-						$return['error'] = array('number' => 3, 'message' => 'An error was encountered while creating your account. Please try again later.');
-					} 
-				} else { //fail to hash
-					$return['success'] = false;
-					$return['error'] = array('number' => 3, 'message' => 'An error was encountered while creating your account. Please try again later.');
+			if(filter_var($email, FILTER_VALIDATE_EMAIL)) {
+				$password = $_REQUEST['password'];
+				$count = Player::doCount(Query::create()->add(Player::EMAIL, $email));
+				if($count > 0) {
+					$passback = array('success' => false, 'error' => $this->_getErrorMessage(self::ERROR_EMAIL_IN_USE));
+				} else {
+					$hash = password_hash($password, PASSWORD_DEFAULT, array("cost" => 10));
+					if(false !== $hash) { //hash success
+						$player = new Player();
+						$player->fromArray($_REQUEST);
+						$player->setPassword($hash);
+						if($player->save()) {
+							$passback = array('success' => true, 'sessionid' => session_id());
+						} else {
+							$passback = array('success' => false,
+								'error' => $this->_getErrorMessage(self::ERROR_ACCOUNT_CREATE_ERROR));
+						}
+					} else { //fail to hash
+						$passback = array('success' => false,
+							'error' => $this->_getErrorMessage(self::ERROR_ACCOUNT_CREATE_ERROR));
+					}
 				}
+			} else {
+				$passback = array('success' => false,
+							'error' => $this->_getErrorMessage(self::ERROR_EMAIL_INVALID));
 			}
 		}
 		die(json_encode($passback));

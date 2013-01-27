@@ -8,8 +8,8 @@
  */
 abstract class baseWord extends ApplicationModel {
 
-	const DEFINITION = 'word.definition';
 	const WID = 'word.wid';
+	const DEFINITION = 'word.definition';
 	const WORD = 'word.word';
 	const PRONUNCIATION_URL = 'word.pronunciationURL';
 	const TYPE = 'word.type';
@@ -56,8 +56,8 @@ abstract class baseWord extends ApplicationModel {
 	 * @var string[]
 	 */
 	protected static $_columnNames = array(
-		'definition',
 		'wid',
+		'definition',
 		'word',
 		'pronunciationURL',
 		'type',
@@ -69,19 +69,13 @@ abstract class baseWord extends ApplicationModel {
 	 * @var string[]
 	 */
 	protected static $_columnTypes = array(
-		'definition' => Model::COLUMN_TYPE_VARCHAR,
 		'wid' => Model::COLUMN_TYPE_INTEGER,
+		'definition' => Model::COLUMN_TYPE_VARCHAR,
 		'word' => Model::COLUMN_TYPE_VARCHAR,
 		'pronunciationURL' => Model::COLUMN_TYPE_VARCHAR,
 		'type' => Model::COLUMN_TYPE_VARCHAR,
 		'difficulty' => Model::COLUMN_TYPE_INTEGER,
 	);
-
-	/**
-	 * `definition` VARCHAR NOT NULL
-	 * @var string
-	 */
-	protected $definition;
 
 	/**
 	 * `wid` INTEGER NOT NULL DEFAULT ''
@@ -90,10 +84,16 @@ abstract class baseWord extends ApplicationModel {
 	protected $wid;
 
 	/**
-	 * `word` VARCHAR NOT NULL
+	 * `definition` VARCHAR NOT NULL
 	 * @var string
 	 */
-	protected $word;
+	protected $definition;
+
+	/**
+	 * `word` VARCHAR NOT NULL DEFAULT ''
+	 * @var string
+	 */
+	protected $word = '';
 
 	/**
 	 * `pronunciationURL` VARCHAR
@@ -114,21 +114,6 @@ abstract class baseWord extends ApplicationModel {
 	protected $difficulty;
 
 	/**
-	 * Gets the value of the definition field
-	 */
-	function getDefinition() {
-		return $this->definition;
-	}
-
-	/**
-	 * Sets the value of the definition field
-	 * @return Word
-	 */
-	function setDefinition($value) {
-		return $this->setColumnValue('definition', $value, Model::COLUMN_TYPE_VARCHAR);
-	}
-
-	/**
 	 * Gets the value of the wid field
 	 */
 	function getWid() {
@@ -141,6 +126,21 @@ abstract class baseWord extends ApplicationModel {
 	 */
 	function setWid($value) {
 		return $this->setColumnValue('wid', $value, Model::COLUMN_TYPE_INTEGER);
+	}
+
+	/**
+	 * Gets the value of the definition field
+	 */
+	function getDefinition() {
+		return $this->definition;
+	}
+
+	/**
+	 * Sets the value of the definition field
+	 * @return Word
+	 */
+	function setDefinition($value) {
+		return $this->setColumnValue('definition', $value, Model::COLUMN_TYPE_VARCHAR);
 	}
 
 	/**
@@ -316,21 +316,21 @@ abstract class baseWord extends ApplicationModel {
 	}
 
 	/**
-	 * Searches the database for a row with a definition
-	 * value that matches the one provided
-	 * @return Word
-	 */
-	static function retrieveByDefinition($value) {
-		return Word::retrieveByColumn('definition', $value);
-	}
-
-	/**
 	 * Searches the database for a row with a wid
 	 * value that matches the one provided
 	 * @return Word
 	 */
 	static function retrieveByWid($value) {
 		return Word::retrieveByPK($value);
+	}
+
+	/**
+	 * Searches the database for a row with a definition
+	 * value that matches the one provided
+	 * @return Word
+	 */
+	static function retrieveByDefinition($value) {
+		return Word::retrieveByColumn('definition', $value);
 	}
 
 	/**
@@ -613,9 +613,6 @@ abstract class baseWord extends ApplicationModel {
 		$this->_validationErrors = array();
 		if (null === $this->getdefinition()) {
 			$this->_validationErrors[] = 'definition must not be null';
-		}
-		if (null === $this->getword()) {
-			$this->_validationErrors[] = 'word must not be null';
 		}
 		if (null === $this->getdifficulty()) {
 			$this->_validationErrors[] = 'difficulty must not be null';

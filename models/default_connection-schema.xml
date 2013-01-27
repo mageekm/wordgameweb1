@@ -19,18 +19,18 @@
     <column name="age" phpName="Age" type="INTEGER" size="10" required="false"/>
     <column name="education" phpName="Education" type="TINYINT" size="45" required="false"/>
     <column name="sex" phpName="Sex" type="TINYINT" required="false"/>
-    <column name="paidTier" phpName="Paidtier" type="INTEGER" required="true"/>
+    <column name="paidTier" phpName="Paidtier" type="INTEGER" required="true" defaultValue="0"/>
     <column name="highScore" phpName="Highscore" type="INTEGER" size="10" required="false"/>
     <unique name="pid_UNIQUE">
       <unique-column name="pid"/>
     </unique>
   </table>
   <table name="word" phpName="Word">
-    <column name="definition" phpName="Definition" type="VARCHAR" size="255" required="true"/>
     <column name="wid" phpName="Wid" type="INTEGER" size="10" primaryKey="true" autoIncrement="true" required="true"/>
-    <column name="word" phpName="Word" type="VARCHAR" size="45" required="true"/>
+    <column name="definition" phpName="Definition" type="VARCHAR" size="255" required="true"/>
+    <column name="word" phpName="Word" type="VARCHAR" size="45" required="true" defaultValue=""/>
     <column name="pronunciationURL" phpName="Pronunciationurl" type="VARCHAR" size="255" required="false"/>
-    <column name="type" phpName="Type" type="VARCHAR" size="10" required="false"/>
+    <column name="type" phpName="Type" type="VARCHAR" size="20" required="false"/>
     <column name="difficulty" phpName="Difficulty" type="INTEGER" size="10" required="true"/>
     <unique name="word_UNIQUE">
       <unique-column name="word"/>

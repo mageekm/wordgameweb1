@@ -34,7 +34,7 @@ CREATE TABLE `player`
 	`age` INTEGER(10),
 	`education` TINYINT(45),
 	`sex` TINYINT,
-	`paidTier` INTEGER NOT NULL,
+	`paidTier` INTEGER DEFAULT 0 NOT NULL,
 	`highScore` INTEGER(10),
 	PRIMARY KEY (`pid`),
 	UNIQUE INDEX `pid_UNIQUE` (`pid`(10))
@@ -48,11 +48,11 @@ DROP TABLE IF EXISTS `word`;
 
 CREATE TABLE `word`
 (
-	`definition` VARCHAR(255) NOT NULL,
 	`wid` INTEGER(10) NOT NULL AUTO_INCREMENT,
-	`word` VARCHAR(45) NOT NULL,
+	`definition` VARCHAR(255) NOT NULL,
+	`word` VARCHAR(45) DEFAULT '' NOT NULL,
 	`pronunciationURL` VARCHAR(255),
-	`type` VARCHAR(10),
+	`type` VARCHAR(20),
 	`difficulty` INTEGER(10) NOT NULL,
 	PRIMARY KEY (`wid`),
 	UNIQUE INDEX `word_UNIQUE` (`word`(45)),

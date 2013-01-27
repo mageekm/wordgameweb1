@@ -138,10 +138,10 @@ abstract class basePlayer extends ApplicationModel {
 	protected $sex;
 
 	/**
-	 * `paidTier` INTEGER NOT NULL DEFAULT ''
+	 * `paidTier` INTEGER NOT NULL DEFAULT 0
 	 * @var int
 	 */
-	protected $paidTier;
+	protected $paidTier = 0;
 
 	/**
 	 * `highScore` INTEGER DEFAULT ''
@@ -752,9 +752,6 @@ abstract class basePlayer extends ApplicationModel {
 		}
 		if (null === $this->getemail()) {
 			$this->_validationErrors[] = 'email must not be null';
-		}
-		if (null === $this->getpaidTier()) {
-			$this->_validationErrors[] = 'paidTier must not be null';
 		}
 		return 0 === count($this->_validationErrors);
 	}

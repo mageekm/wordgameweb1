@@ -47,7 +47,6 @@ if (get_magic_quotes_gpc()) {
 
 ClassLoader::addRepository('LIBRARIES', LIBRARIES_DIR);
 ClassLoader::import('LIBRARIES:dabl');
-ClassLoader::import('LIBRARIES:password');
 
 // load all config files
 $config_files = glob(CONFIG_DIR . '*.php');
